@@ -1,6 +1,6 @@
-# New Life Nursing Home Billing
+# Billing
 
-PHP and MariaDB billing application for New Life Nursing Home. A bill is stored in the database, then viewed or printed from that saved record. No separate local print copy is needed.
+PHP and MariaDB billing application for billing soft. A bill is stored in the database, then viewed or printed from that saved record. No separate local print copy is needed.
 
 ## Setup
 
