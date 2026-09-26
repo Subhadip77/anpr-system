@@ -1,0 +1,6 @@
+<?php
+require_once '../includes/auth.php'; require_once '../config/database.php';
+$pageTitle = 'Bill History'; require_once '../includes/header.php';
+$bills = $pdo->query('SELECT id, bill_number, invoice_no, bill_date, patient_name, net_amount, balance_amount FROM bills ORDER BY id DESC')->fetchAll();
+?>
+<section class="card"><div class="title-row"><h1>Bill history</h1><a class="button" href="create.php">New Bill</a></div><div class="table-scroll"><table><thead><tr><th>Bill no.</th><th>Invoice</th><th>Date</th><th>Patient</th><th>Net amount</th><th>Due</th><th></th></tr></thead><tbody><?php foreach ($bills as $bill): ?><tr><td><?= e($bill['bill_number']) ?></td><td><?= e($bill['invoice_no']) ?></td><td><?= e($bill['bill_date']) ?></td><td><?= e($bill['patient_name']) ?></td><td><?= number_format((float) $bill['net_amount'], 2) ?></td><td><?= number_format((float) $bill['balance_amount'], 2) ?></td><td><a href="print.php?id=<?= $bill['id'] ?>" target="_blank">View / Print</a></td></tr><?php endforeach; ?><?php if (!$bills): ?><tr><td colspan="7">No bills saved yet.</td></tr><?php endif; ?></tbody></table></div></section><?php require_once '../includes/footer.php'; ?>
