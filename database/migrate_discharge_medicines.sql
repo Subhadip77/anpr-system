@@ -1,0 +1,7 @@
+-- Run this once on an existing nursing_billing database.
+CREATE TABLE IF NOT EXISTS discharge_medicines (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    medicine_name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

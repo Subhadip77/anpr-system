@@ -18,6 +18,34 @@ function nullableDate(array $source, string $key): ?string
     return $value && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value : null;
 }
 
+function displayDate(?string $value): string
+{
+    if (!$value) return '';
+    $date = DateTime::createFromFormat('Y-m-d', $value);
+    return $date ? $date->format('d/m/y') : $value;
+}
+
+function formattedAddress(array $bill): string
+{
+    $parts = [
+        $bill['address'] ?? null,
+        $bill['village'] ?? null,
+        $bill['post_office'] ?? null,
+        $bill['police_station'] ?? null,
+        $bill['district'] ?? null,
+        $bill['block'] ?? null,
+        $bill['gp_municipality'] ?? null,
+    ];
+    $uniqueParts = [];
+    foreach ($parts as $part) {
+        $part = trim((string) $part);
+        $key = strtolower($part);
+        if ($part !== '' && !isset($uniqueParts[$key])) $uniqueParts[$key] = $part;
+    }
+    $address = implode(', ', $uniqueParts);
+    return $address . (!empty($bill['pin']) ? ($address !== '' ? ' - ' : '') . $bill['pin'] : '');
+}
+
 function nullableTime(array $source, string $key): ?string
 {
     $value = nullableString($source, $key);
@@ -31,7 +59,11 @@ function money(mixed $value): float
 
 function nextBillNumber(PDO $pdo): string
 {
-    return 'NLB-' . date('Y') . '-' . str_pad((string) ((int) $pdo->query('SELECT COUNT(*) FROM bills')->fetchColumn() + 1), 5, '0', STR_PAD_LEFT);
+    $year = date('Y');
+    $statement = $pdo->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(bill_number, '-', -1) AS UNSIGNED)) FROM bills WHERE bill_number LIKE ?");
+    $statement->execute(['NLB-' . $year . '-%']);
+    $nextNumber = ((int) $statement->fetchColumn()) + 1;
+    return 'NLB-' . $year . '-' . str_pad((string) $nextNumber, 5, '0', STR_PAD_LEFT);
 }
 
 function nursingHomeSettings(PDO $pdo): array
